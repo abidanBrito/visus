@@ -1,0 +1,25 @@
+---
+  BasedOnStyle: Microsoft
+  IndentWidth: 4
+  AccessModifierOffset: -4
+  NamespaceIndentation: All
+  IndentPPDirectives: BeforeHash
+  UseTab: Never
+  ColumnLimit: 100
+  BreakStringLiterals: true
+  BreakBeforeBraces: Allman
+  BreakBeforeBinaryOperators: NonAssignment
+  BreakBeforeTernaryOperators: true
+  AlwaysBreakTemplateDeclarations: Yes
+  PackConstructorInitializers: Never
+  SeparateDefinitionBlocks: Always
+  KeepEmptyLinesAtTheStartOfBlocks: false
+  MaxEmptyLinesToKeep: 1
+  ReflowComments: true
+  AlignTrailingComments: true
+  AlignAfterOpenBracket: Align
+  PointerAlignment: Left
+  IncludeBlocks: Regroup
+  SortIncludes: false
+  AllowAllParametersOfDeclarationOnNextLine: false
+...

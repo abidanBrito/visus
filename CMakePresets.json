@@ -1,0 +1,41 @@
+﻿{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "msvc-ninja",
+            "hidden": true,
+            "generator": "Ninja",
+          "binaryDir": "${sourceDir}/build/${presetName}",
+          "installDir": "${sourceDir}/bin/${presetName}",
+          "cacheVariables": {
+            "CMAKE_C_COMPILER": "cl.exe",
+            "CMAKE_CXX_COMPILER": "cl.exe"
+          },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "x64 Debug",
+            "inherits": "msvc-ninja",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "x64 Release",
+            "inherits": "debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ]
+}
