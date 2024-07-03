@@ -1,9 +1,8 @@
-// #include <Windows.h>
 #include "App.hpp"
 
 int main()
 {
-    App visusApp = App();
+    App visusApp;
     visusApp.frameloop();
 
     return 0;

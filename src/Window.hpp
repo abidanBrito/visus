@@ -28,8 +28,9 @@ public:
     ~Window();
     void destroy();
 
-    void setIcon(const std::string& path);
     void setTitle(const std::string& name);
+    void setIcon(const std::string& path);
+    void setCursorMode(int32_t mode);
     void setVSync(bool state);
 
     bool isVSyncOn() const;

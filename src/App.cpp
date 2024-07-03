@@ -4,8 +4,10 @@ using namespace gl;
 
 App::App()
     : m_window{Window()}
+//, m_input{nullptr}
 {
     m_window.setIcon("img/logo.png");
+    // m_input = m_window.getHandle();
 }
 
 void App::exit()
@@ -28,7 +30,7 @@ void App::frameloop()
 void App::update()
 {
     glfwPollEvents();
-    // ...
+    // TODO(abi): scene update logic
 }
 
 void App::render()
@@ -37,12 +39,12 @@ void App::render()
     clearWindowBuffers(true, false, false);
 }
 
-void App::clearWindowBuffers(bool colorBuffer, bool depthBuffer, bool stencilBuffer)
+void App::clearWindowBuffers(bool color, bool depth, bool stencil)
 {
     ClearBufferMask bufferMask =
-        (colorBuffer ? ClearBufferMask::GL_COLOR_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
-        | (depthBuffer ? ClearBufferMask::GL_DEPTH_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
-        | (stencilBuffer ? ClearBufferMask::GL_STENCIL_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT);
+        (color ? ClearBufferMask::GL_COLOR_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
+        | (depth ? ClearBufferMask::GL_DEPTH_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
+        | (stencil ? ClearBufferMask::GL_STENCIL_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT);
 
     glClearColor(1.f, 1.f, 0.f, 1.f);
     glClear(bufferMask);

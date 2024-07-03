@@ -76,6 +76,12 @@ void Window::destroy()
     glfwDestroyWindow(m_handle);
 }
 
+void Window::setTitle(const std::string& name)
+{
+    m_properties.title = name;
+    glfwSetWindowTitle(m_handle, name.c_str());
+}
+
 void Window::setIcon(const std::string& path)
 {
     // Load window icon
@@ -84,6 +90,17 @@ void Window::setIcon(const std::string& path)
         stbi_load(path.c_str(), &windowIcons[0].width, &windowIcons[0].height, 0, 4);
     glfwSetWindowIcon(m_handle, 1, windowIcons);
     stbi_image_free(windowIcons[0].pixels);
+}
+
+void Window::setCursorMode(int32_t mode)
+{
+    glfwSetInputMode(m_handle, GLFW_CURSOR, mode);
+}
+
+void Window::setVSync(bool state)
+{
+    glfwSwapInterval((state ? 1 : 0));
+    m_properties.vSync = state;
 }
 
 GLFWwindow* Window::getHandle() const
@@ -104,18 +121,6 @@ uint32_t Window::getHeight() const
 std::string Window::getTitle() const
 {
     return m_properties.title;
-}
-
-void Window::setTitle(const std::string& name)
-{
-    m_properties.title = name;
-    glfwSetWindowTitle(m_handle, name.c_str());
-}
-
-void Window::setVSync(bool state)
-{
-    glfwSwapInterval((state ? 1 : 0));
-    m_properties.vSync = state;
 }
 
 bool Window::isVSyncOn() const
@@ -141,6 +146,9 @@ void Window::framebufferSizeCallback(GLFWwindow* hwnd, int width, int height)
     // Retain viewport size
     window->m_properties.width = width;
     window->m_properties.height = height;
+
+    // NOTE(abi): not sure if this is needed...
+    // glViewport(0, 0, width, height);
 
     // Redraw window to account for viewport size changes
     glClear(GL_COLOR_BUFFER_BIT);
