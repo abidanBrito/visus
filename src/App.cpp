@@ -4,14 +4,14 @@ using namespace gl;
 
 App::App()
     : m_window{Window()},
-      m_input{InputManager()},
+      m_input{InputManager(m_window.getHandle())},
       m_ui{UIManager()}
 {
     m_window.setIcon("res/img/logo.png");
     m_window.setVSync(true);
 
     auto hwnd = m_window.getHandle();
-    m_input.bindEventCallbacks(hwnd);
+    // m_input.bindEventCallbacks(hwnd);
 
     m_ui.initialize(hwnd);
     m_ui.font("res/fonts/roboto_medium.ttf");

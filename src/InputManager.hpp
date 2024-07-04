@@ -19,7 +19,9 @@
 class InputManager
 {
 public:
-    void bindEventCallbacks(GLFWwindow* hwnd) const;
+    InputManager(GLFWwindow* hwnd);
+    // void bindEventCallbacks(GLFWwindow* hwnd) const;
+
     // inline static void setCursorMode(GLFWwindow* hwnd, const int32_t mode);
     // inline int32_t getCursorMode();
     // inline std::pair<float, float> getCursorPosition();

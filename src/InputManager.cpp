@@ -1,7 +1,7 @@
 #include "InputManager.hpp"
 #include "Window.hpp"
 
-void InputManager::bindEventCallbacks(GLFWwindow* hwnd) const
+InputManager::InputManager(GLFWwindow* hwnd)
 {
     // Keyboard interactions
     glfwSetKeyCallback(hwnd, &InputManager::onKeyPress);
@@ -12,6 +12,18 @@ void InputManager::bindEventCallbacks(GLFWwindow* hwnd) const
     glfwSetCursorPosCallback(hwnd, &InputManager::onCursorMove);
     glfwSetScrollCallback(hwnd, &InputManager::onScroll);
 }
+
+// void InputManager::bindEventCallbacks(GLFWwindow* hwnd) const
+// {
+//     // Keyboard interactions
+//     glfwSetKeyCallback(hwnd, &InputManager::onKeyPress);
+//     glfwSetInputMode(hwnd, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+
+//     // Mouse interactions
+//     glfwSetMouseButtonCallback(hwnd, &InputManager::onMouseButtonPress);
+//     glfwSetCursorPosCallback(hwnd, &InputManager::onCursorMove);
+//     glfwSetScrollCallback(hwnd, &InputManager::onScroll);
+// }
 
 // void InputManager::setCursorMode(GLFWwindow* hwnd, const int32_t mode)
 // {
