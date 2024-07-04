@@ -8,25 +8,31 @@
     #include <GLFW/glfw3native.h>
 #endif
 
+// #include <utility>
+
 // struct CursorData
 // {
 //     int32_t mode;
-//     double x, y;
+//     float x, y;
 // };
-
-class App;
 
 class InputManager
 {
 public:
-    InputManager(GLFWwindow* hwnd = nullptr);
-    // CursorData* getCursorPosition();
+    void bindEventCallbacks(GLFWwindow* hwnd) const;
+    // inline static void setCursorMode(GLFWwindow* hwnd, const int32_t mode);
+    // inline int32_t getCursorMode();
+    // inline std::pair<float, float> getCursorPosition();
 
 private:
-    // CursorData m_cursor;
+    // static CursorData m_cursor;
+    // static void updateCursorPosition(const float xPos, const float yPos);
 
-    static void keyCallback(GLFWwindow* hwnd, int key, int scanCode, int action, int mods);
-    static void cursorPosCallback(GLFWwindow* hwnd, double xPos, double yPos);
-    static void mouseButtonCallback(GLFWwindow* hwnd, int button, int action, int mods);
-    static void scrollCallback(GLFWwindow* hwnd, double xOffset, double yOffset);
+    // Keyboard/mouse interactions
+    static void onKeyPress(GLFWwindow* hwnd, const int32_t key, const int32_t scanCode,
+                           const int32_t action, const int32_t mods);
+    static void onMouseButtonPress(GLFWwindow* hwnd, const int32_t button, const int32_t action,
+                                   const int32_t mods);
+    static void onCursorMove(GLFWwindow* hwnd, const double xPos, const double yPos);
+    static void onScroll(GLFWwindow* hwnd, const double xOffset, const double yOffset);
 };

@@ -22,7 +22,7 @@ class Window
 {
 public:
     Window(uint32_t width = 1280, uint32_t height = 720, const std::string& title = "MyApp",
-           bool vSync = true);
+           bool vSync = false);
     Window(WindowData properties);
 
     ~Window();

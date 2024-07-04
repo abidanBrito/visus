@@ -25,8 +25,8 @@ find_package(glbinding CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE glbinding::glbinding glbinding::glbinding-aux)
 
 # Dear ImGui - Minimal immediate mode GUI
-# find_package(imgui CONFIG REQUIRED)
-# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui)
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui)
 
 # File dialogs
 # find_package(tinyfiledialogs CONFIG REQUIRED)
