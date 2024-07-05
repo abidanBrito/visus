@@ -2,8 +2,8 @@
 
 int main()
 {
-    App visusApp;
-    visusApp.frameloop();
+    visus::App visus3D;
+    visus3D.frameloop();
 
     return 0;
 }

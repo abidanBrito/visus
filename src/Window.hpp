@@ -11,39 +11,42 @@
 #include <glbinding/gl/gl.h>
 #include <glbinding/glbinding.h>
 
-struct WindowData
+namespace visus
 {
-    uint32_t width, height;
-    std::string title;
-    bool vSync;
-};
+    struct WindowData
+    {
+        uint32_t width, height;
+        std::string title;
+        bool vSync;
+    };
 
-class Window
-{
-public:
-    Window(uint32_t width = 1280, uint32_t height = 720, const std::string& title = "MyApp",
-           bool vSync = false);
-    Window(WindowData properties);
+    class Window
+    {
+    public:
+        Window(uint32_t width = 1280, uint32_t height = 720, const std::string& title = "MyApp",
+               bool vSync = false);
+        Window(WindowData properties);
 
-    ~Window();
-    void destroy();
+        ~Window();
+        void destroy();
 
-    void setTitle(const std::string& name);
-    void setIcon(const std::string& path);
-    void setCursorMode(int32_t mode);
-    void setVSync(bool state);
+        void setTitle(const std::string& name);
+        void setIcon(const std::string& path);
+        void setCursorMode(int32_t mode);
+        void setVSync(bool state);
 
-    bool isVSyncOn() const;
-    GLFWwindow* getHandle() const;
-    uint32_t getWidth() const;
-    uint32_t getHeight() const;
-    std::string getTitle() const;
+        bool isVSyncOn() const;
+        GLFWwindow* getHandle() const;
+        uint32_t getWidth() const;
+        uint32_t getHeight() const;
+        std::string getTitle() const;
 
-private:
-    GLFWwindow* m_handle;
-    WindowData m_properties;
+    private:
+        GLFWwindow* m_handle;
+        WindowData m_properties;
 
-    void initialize();
-    static void errorCallback(int errorCode, const char* description);
-    static void framebufferSizeCallback(GLFWwindow* hwnd, int width, int height);
-};
+        void initialize();
+        static void errorCallback(int errorCode, const char* description);
+        static void framebufferSizeCallback(GLFWwindow* hwnd, int width, int height);
+    };
+} // namespace visus
