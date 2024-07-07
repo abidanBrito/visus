@@ -14,7 +14,7 @@ namespace visus
 
     private:
         Window m_window;
-        InputManager m_input;
+        input::InputManager m_input;
         // UIManager m_ui;
 
         void render();

@@ -6,7 +6,17 @@ namespace visus
 {
     namespace input
     {
-        struct InputHandlers
+        struct KeyEvent
+        {
+            int32_t keyCode, scanCode, action, mods;
+        };
+
+        struct InputEventHandlers
+        {
+            std::function<void(KeyEvent e)> onFullscreenPressed;
+        };
+
+        struct GLFWInputHandlers
         {
             // Keyboard events
             std::function<void(const int32_t key, const int32_t scanCode, const int32_t action,
@@ -20,7 +30,7 @@ namespace visus
             std::function<void(const double xOffset, const double yOffset)> onScroll;
         };
 
-        extern InputHandlers input;
-        extern InputHandlers glfwInput;
+        inline GLFWInputHandlers glfwInput;
+        inline InputEventHandlers input;
     } // namespace input
 } // namespace visus

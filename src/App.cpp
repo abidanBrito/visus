@@ -7,12 +7,13 @@ namespace visus
 {
     App::App()
         : m_window{Window()},
-          m_input{InputManager(m_window.getHandle())}
+          m_input{input::InputManager(m_window.getHandle())}
     {
         m_window.setIcon("res/img/logo.png");
         m_window.setVSync(true);
 
         auto hwnd = m_window.getHandle();
+        glfwSetWindowUserPointer(hwnd, &m_window);
         // m_input.bindEventCallbacks(hwnd);
 
         ui::initialize(hwnd);
