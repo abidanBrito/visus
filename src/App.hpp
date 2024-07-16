@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Window.hpp"
-#include "InputManager.hpp"
+#include "core/Window.hpp"
+#include "core/InputManager.hpp"
 
 namespace visus
 {

@@ -19,7 +19,10 @@ namespace glfw
             return;
         }
 
-        visus::input::glfwInput.onKeyPress(key, scanCode, action, mods);
+        if (visus::input::glfwInput.onKeyPress)
+        {
+            visus::input::glfwInput.onKeyPress(key, scanCode, action, mods);
+        }
     }
 
     void glfwOnMouseButtonPress(GLFWwindow* hwnd, [[maybe_unused]] const int32_t button,
@@ -31,7 +34,10 @@ namespace glfw
             return;
         }
 
-        visus::input::glfwInput.onMouseButtonPress(button, action, mods);
+        if (visus::input::glfwInput.onMouseButtonPress)
+        {
+            visus::input::glfwInput.onMouseButtonPress(button, action, mods);
+        }
     }
 
     void glfwOnCursorMove(GLFWwindow* hwnd, [[maybe_unused]] double xPos,
@@ -42,7 +48,10 @@ namespace glfw
             return;
         }
 
-        visus::input::glfwInput.onCursorMove(xPos, yPos);
+        if (visus::input::glfwInput.onCursorMove)
+        {
+            visus::input::glfwInput.onCursorMove(xPos, yPos);
+        }
     }
 
     void glfwOnScroll(GLFWwindow* hwnd, [[maybe_unused]] double xOffset,
@@ -53,7 +62,10 @@ namespace glfw
             return;
         }
 
-        visus::input::glfwInput.onScroll(xOffset, yOffset);
+        if (visus::input::glfwInput.onScroll)
+        {
+            visus::input::glfwInput.onScroll(xOffset, yOffset);
+        }
     }
 } // namespace glfw
 

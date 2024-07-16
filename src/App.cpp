@@ -1,5 +1,5 @@
 #include "App.hpp"
-#include "UI.hpp"
+#include "ui/UI.hpp"
 
 using namespace gl;
 
