@@ -6,6 +6,7 @@
     "glfw3",
     "glbinding",
     "stb",
+    "glm",
     {
       "name": "imgui",
       "default-features": false,
