@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Camera.hpp"
-// #include "VolumeData.hpp"
+#include "VolumeData.hpp"
 
 #include <glm/glm.hpp>
 
@@ -18,7 +18,7 @@ namespace visus
             App* _app;
             glm::mat4 _sceneMat{1.f};
             std::unique_ptr<Camera> _camera;
-            // std::unique_ptr<VolumeData> _volume;
+            std::unique_ptr<VolumeData> _volume;
 
         public:
             Scene(App* app);
@@ -34,10 +34,10 @@ namespace visus
                 return _camera.get();
             }
 
-            // inline VolumeData* getVolume() const
-            // {
-            //     return _volume.get();
-            // }
+            inline VolumeData* getVolume() const
+            {
+                return _volume.get();
+            }
         };
     } // namespace graphics
 } // namespace visus

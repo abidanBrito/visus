@@ -5,13 +5,14 @@
   "dependencies": [
     "glfw3",
     "glbinding",
-    "stb",
-    "glm",
-    "tinyfiledialogs",
     {
       "name": "imgui",
       "default-features": false,
       "features": [ "glfw-binding", "opengl3-binding" ]
-    }
+    },
+    "glm",
+    "stb",
+    "nifticlib",
+    "tinyfiledialogs"
   ]
 }

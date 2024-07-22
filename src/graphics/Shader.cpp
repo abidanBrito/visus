@@ -74,11 +74,11 @@ namespace visus
             {
                 std::vector<char> log(logLength);
                 glGetProgramInfoLog(program, logLength, &logLength, log.data());
-                std::cout << "Program's info log:\n" << log.data() << '\n';
+                std::cout << "[DEBUG] Program's info log:\n" << log.data() << '\n';
             }
             else
             {
-                std::cout << "Program's info log is empty.\n" << std::endl;
+                std::cout << "[DEBUG] Program's info log is empty.\n" << std::endl;
             }
 
             // Clean up

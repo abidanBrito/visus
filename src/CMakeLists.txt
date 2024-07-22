@@ -27,3 +27,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui)
 # File dialogs
 find_package(tinyfiledialogs CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tinyfiledialogs::tinyfiledialogs)
+
+# NIfTI IO
+find_package(NIFTI CONFIG REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE NIFTI::niftiio)
