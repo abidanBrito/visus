@@ -20,11 +20,6 @@ namespace visus
 
             void bind() const;
             void unbind() const;
-
-            inline unsigned int getCount() const
-            {
-                return _count;
-            }
         };
     } // namespace graphics
 } // namespace visus

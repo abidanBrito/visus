@@ -19,15 +19,15 @@ namespace visus
         void VolumeRenderer::setupScreenQuad()
         {
             // Coordinates (per vertex)
-            std::vector<glm::vec2> vertices = {
-                glm::vec2(-1.f, 1.f),  // Top-left
-                glm::vec2(-1.f, -1.f), // Bottom-left
-                glm::vec2(1.f, -1.f),  // Bottom-right
+            std::vector<glm::vec2> vertices{
+                glm::vec2(-1.f, -1.f), // Top-left
+                glm::vec2(1.f, -1.f),  // Bottom-left
                 glm::vec2(1.f, 1.f),   // Top-right
+                glm::vec2(-1.f, 1.f),  // Bottom-right
             };
 
             // Indices (per triangle)
-            std::vector<uint32_t> indices = {
+            std::vector<uint32_t> indices{
                 0, 1, 2, // Triangle #1
                 2, 3, 0  // Triangle #2
             };
@@ -45,12 +45,15 @@ namespace visus
             // Bind VBO
             _screenQuadVertices->bind();
 
-            // Vertex layout
-            VBLayout layout;
-            layout.push<float>(2);
-
             // Add VBO to VAO
-            _screenQuad->addVertexBuffer(*_screenQuadVertices, layout);
+            // BUG(abi): there's something off here...
+            // VBLayout layout;
+            // layout.push<float>(2);
+            // _screenQuad->addVertexBuffer(*_screenQuadVertices, layout);
+
+            // HACK(abi): for now, let's make the OpenGL calls ourselves.
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             // Bind IBO
             _screenQuadIndices->bind();
@@ -59,7 +62,7 @@ namespace visus
             _screenQuad->unbind();
 
             // IMPORTANT(abi): required by the draw call
-            _screenQuadIndicesSize = static_cast<int>(indices.size());
+            _screenQuadIndicesSize = static_cast<unsigned int>(indices.size());
 
             vertices.clear();
             indices.clear();
@@ -84,7 +87,7 @@ namespace visus
             // updateUniforms();
 
             // Render volume
-            glDrawElements(GL_TRIANGLES, _screenQuadIndices->getCount(), GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, _screenQuadIndicesSize, GL_UNSIGNED_INT, nullptr);
 
             // Release VAO and shader program
             _screenQuad->unbind();

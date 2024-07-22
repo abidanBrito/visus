@@ -24,7 +24,7 @@ namespace visus
             std::unique_ptr<VBO> _screenQuadVertices{nullptr};
             std::unique_ptr<IBO> _screenQuadIndices{nullptr};
             std::unique_ptr<VAO> _screenQuad{nullptr};
-            int _screenQuadIndicesSize;
+            unsigned int _screenQuadIndicesSize;
 
             // DVR
             std::unique_ptr<Shader> _dvrShader{nullptr};

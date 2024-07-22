@@ -45,8 +45,8 @@ namespace visus
     void App::render()
     {
         // Clear the back buffer
-        clearWindowBuffers(true, true, false);
-
+        clearWindowBuffers(true, false, false);
+        glDisable(GL_CULL_FACE);
         ui::startFrame();
 
         // TODO(abi): render scene here...
