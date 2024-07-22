@@ -1,5 +1,5 @@
 # Traverse subdirectories for translation units
-file(GLOB_RECURSE project_sources *.cpp core/*.cpp graphics/*.cpp ui/*.cpp)
+file(GLOB_RECURSE project_sources *.cpp app/*.cpp core/*.cpp graphics/*.cpp ui/*.cpp)
 add_executable(${CMAKE_PROJECT_NAME} ${project_sources})
 
 # GLFW - Lightweight multi-platform windowing, context & event polling.
@@ -25,9 +25,5 @@ find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE imgui::imgui)
 
 # File dialogs
-# find_package(tinyfiledialogs CONFIG REQUIRED)
-# target_link_libraries(minity PRIVATE tinyfiledialogs::tinyfiledialogs)
-
-# include_directories(core/)
-# include_directories(graphics/)
-# include_directories(ui/)
+find_package(tinyfiledialogs CONFIG REQUIRED)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tinyfiledialogs::tinyfiledialogs)

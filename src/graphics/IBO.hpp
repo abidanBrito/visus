@@ -8,16 +8,23 @@ namespace visus
 {
     namespace graphics
     {
-        class VBO
+        class IBO
         {
         private:
-            unsigned int _vbo;
+            uint32_t _indexBuffer;
+            unsigned int _count;
 
         public:
-            VBO(std::vector<glm::vec2>& vertices);
+            IBO(std::vector<unsigned int>& indices);
+            ~IBO();
 
             void bind() const;
             void unbind() const;
+
+            inline unsigned int getCount() const
+            {
+                return _count;
+            }
         };
     } // namespace graphics
 } // namespace visus

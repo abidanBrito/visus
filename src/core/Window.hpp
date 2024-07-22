@@ -22,6 +22,14 @@ namespace visus
 
     class Window
     {
+    private:
+        GLFWwindow* _handle;
+        WindowData _properties;
+
+        void initialize();
+        static void errorCallback(int errorCode, const char* description);
+        static void framebufferSizeCallback(GLFWwindow* hwnd, int width, int height);
+
     public:
         Window(uint32_t width = 1280, uint32_t height = 720, const std::string& title = "MyApp",
                bool vSync = false);
@@ -40,13 +48,5 @@ namespace visus
         uint32_t getWidth() const;
         uint32_t getHeight() const;
         std::string getTitle() const;
-
-    private:
-        GLFWwindow* m_handle;
-        WindowData m_properties;
-
-        void initialize();
-        static void errorCallback(int errorCode, const char* description);
-        static void framebufferSizeCallback(GLFWwindow* hwnd, int width, int height);
     };
 } // namespace visus

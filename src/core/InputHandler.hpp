@@ -11,9 +11,27 @@ namespace visus
             int32_t keyCode, scanCode, action, mods;
         };
 
+        struct MButtonPressEvent
+        {
+            int32_t button, action, mods;
+        };
+
+        struct MCursorMoveEvent
+        {
+            double xPos, yPos;
+        };
+
+        struct MScrollEvent
+        {
+            double xOffset, yOffset;
+        };
+
         struct InputEventHandlers
         {
-            std::function<void(KeyEvent e)> onFullscreenPressed;
+            std::function<void(KeyEvent e)> onKeyPressed;
+            std::function<void(MButtonPressEvent e)> onMButtonPressed;
+            std::function<void(MCursorMoveEvent e)> onCursorMoved;
+            std::function<void(MScrollEvent e)> onScrolled;
         };
 
         struct GLFWInputHandlers

@@ -1,6 +1,7 @@
 #include "GLFWInput.hpp"
 #include "InputHandler.hpp"
 #include "Window.hpp"
+#include <iostream>
 
 namespace glfw
 {
@@ -10,9 +11,8 @@ namespace glfw
         return (window == nullptr || window->getHandle() != hwnd) ? false : true;
     }
 
-    void glfwOnKeyPress(GLFWwindow* hwnd, [[maybe_unused]] const int32_t key,
-                        [[maybe_unused]] const int32_t scanCode,
-                        [[maybe_unused]] const int32_t action, [[maybe_unused]] const int32_t mods)
+    void glfwOnKeyPress(GLFWwindow* hwnd, const int32_t key, const int32_t scanCode,
+                        const int32_t action, const int32_t mods)
     {
         if (!ownWindowHandle(hwnd))
         {
@@ -25,9 +25,8 @@ namespace glfw
         }
     }
 
-    void glfwOnMouseButtonPress(GLFWwindow* hwnd, [[maybe_unused]] const int32_t button,
-                                [[maybe_unused]] const int32_t action,
-                                [[maybe_unused]] const int32_t mods)
+    void glfwOnMouseButtonPress(GLFWwindow* hwnd, const int32_t button, const int32_t action,
+                                const int32_t mods)
     {
         if (!ownWindowHandle(hwnd))
         {
@@ -40,8 +39,7 @@ namespace glfw
         }
     }
 
-    void glfwOnCursorMove(GLFWwindow* hwnd, [[maybe_unused]] double xPos,
-                          [[maybe_unused]] double yPos)
+    void glfwOnCursorMove(GLFWwindow* hwnd, double xPos, double yPos)
     {
         if (!ownWindowHandle(hwnd))
         {
@@ -54,8 +52,7 @@ namespace glfw
         }
     }
 
-    void glfwOnScroll(GLFWwindow* hwnd, [[maybe_unused]] double xOffset,
-                      [[maybe_unused]] double yOffset)
+    void glfwOnScroll(GLFWwindow* hwnd, double xOffset, double yOffset)
     {
         if (!ownWindowHandle(hwnd))
         {

@@ -1,57 +1,56 @@
 #include "App.hpp"
-#include "ui/UI.hpp"
+#include "../ui/UI.hpp"
 
 using namespace gl;
 
 namespace visus
 {
     App::App()
-        : m_window{Window()},
-          m_input{input::InputManager(m_window.getHandle())}
+        : _window{Window()},
+          _input{input::InputManager(_window.getHandle())}
     {
-        m_window.setIcon("res/img/logo.png");
-        m_window.setVSync(true);
+        _window.setIcon("res/img/logo.png");
+        _window.setVSync(true);
 
-        auto hwnd = m_window.getHandle();
-        glfwSetWindowUserPointer(hwnd, &m_window);
-        // m_input.bindEventCallbacks(hwnd);
+        auto hwnd = _window.getHandle();
+        glfwSetWindowUserPointer(hwnd, &_window);
+
+        _scene = std::make_unique<graphics::Scene>(this);
+        _renderer = std::make_unique<graphics::VolumeRenderer>(this);
 
         ui::initialize(hwnd);
         ui::font("res/fonts/roboto_medium.ttf");
     }
 
-    void App::exit()
-    {
-        m_window.destroy();
-        glfwTerminate();
-    }
-
     void App::frameloop()
     {
-        auto hwnd = m_window.getHandle();
+        auto hwnd = _window.getHandle();
         while (!glfwWindowShouldClose(hwnd))
         {
             update();
             render();
             glfwSwapBuffers(hwnd);
         }
+
+        _window.destroy();
+        glfwTerminate();
     }
 
     void App::update()
     {
         glfwPollEvents();
-
-        // TODO(abi): update scene logic here...
+        // NOTE(abi): for interactive scenes, we can update it here
     }
 
     void App::render()
     {
         // Clear the back buffer
-        clearWindowBuffers(true, false, false);
+        clearWindowBuffers(true, true, false);
 
         ui::startFrame();
 
         // TODO(abi): render scene here...
+        _renderer->render();
 
         ui::endFrame();
     }
@@ -63,7 +62,7 @@ namespace visus
             | (depth ? ClearBufferMask::GL_DEPTH_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
             | (stencil ? ClearBufferMask::GL_STENCIL_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT);
 
-        glClearColor(0.7f, 0.7f, 0.7f, 0.2f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.f);
         glClear(bufferMask);
     }
 } // namespace visus

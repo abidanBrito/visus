@@ -13,12 +13,12 @@ namespace visus
 {
     namespace graphics
     {
-        Shader::Shader(const std::string& filePath)
-            : _source{filePath},
-              _program{0}
+        Shader::Shader(const std::string& vsPath, const std::string& fsPath)
+            : _program{0}
         {
-            ShaderProgram source = parseShader(filePath);
-            _program = createShaderProgram(source.vertexShader, source.fragmentShader);
+            std::string vs = parseShader(vsPath);
+            std::string fs = parseShader(fsPath);
+            _program = createShaderProgram(vs, fs);
         }
 
         Shader::~Shader()
@@ -36,54 +36,50 @@ namespace visus
             glUseProgram(0);
         }
 
-        ShaderProgram Shader::parseShader(const std::string& filePath)
+        std::string Shader::parseShader(const std::string& shaderPath)
         {
-            std::ifstream stream(filePath);
-            std::string line;
-            std::stringstream ss[2];
-
-            ShaderType type = ShaderType::NONE;
-
-            while (getline(stream, line))
+            std::ifstream file(shaderPath);
+            if (!file.is_open())
             {
-                if (line.find("#shader") != std::string::npos)
-                {
-                    if (line.find("vertex") != std::string::npos)
-                    {
-                        type = ShaderType::VERTEX;
-                    }
-                    else if (line.find("fragment") != std::string::npos)
-                    {
-                        type = ShaderType::FRAGMENT;
-                    }
-                }
-                else
-                {
-                    ss[(int)type] << line << "\n";
-                }
+                std::cout << "Unable to open shader file at the specific path:" << '\n';
             }
 
-            return {ss[0].str(), ss[1].str()};
+            std::stringstream sourceBuffer;
+            sourceBuffer << file.rdbuf();
+
+            return sourceBuffer.str();
         }
 
-        uint32_t Shader::createShaderProgram(const std::string& vertexShader,
-                                             const std::string& fragmentShader)
+        unsigned int Shader::createShaderProgram(const std::string& vertexShader,
+                                                 const std::string& fragmentShader)
         {
-            uint32_t program = static_cast<uint32_t>(glCreateProgram());
+            unsigned int program = glCreateProgram();
 
             // Compile and attach shaders
-            unsigned int vs =
-                compileShader(vertexShader, static_cast<unsigned int>(GL_VERTEX_SHADER));
+            unsigned int vs = compileShader(vertexShader, ShaderType::VERTEX);
             glAttachShader(program, vs);
 
-            unsigned int fs =
-                compileShader(fragmentShader, static_cast<unsigned int>(GL_FRAGMENT_SHADER));
+            unsigned int fs = compileShader(fragmentShader, ShaderType::FRAGMENT);
             glAttachShader(program, fs);
 
             // NOTE(abi): linking ensures that attached shaders get run on the
             // programmable vertex processor.
             glLinkProgram(program);
             glValidateProgram(program);
+
+            // Info log, to check for errors
+            GLint logLength = 0;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+            if (logLength > 0)
+            {
+                std::vector<char> log(logLength);
+                glGetProgramInfoLog(program, logLength, &logLength, log.data());
+                std::cout << "Program's info log:\n" << log.data() << '\n';
+            }
+            else
+            {
+                std::cout << "Program's info log is empty.\n" << std::endl;
+            }
 
             // Clean up
             glDeleteShader(vs);
@@ -92,10 +88,10 @@ namespace visus
             return program;
         }
 
-        // TODO(abi): exception handling.
-        uint32_t Shader::compileShader(const std::string& source, uint32_t type)
+        unsigned int Shader::compileShader(const std::string& source, ShaderType type)
         {
-            unsigned int shaderID = glCreateShader(static_cast<GLenum>(type));
+            unsigned int shaderID =
+                glCreateShader(type == ShaderType::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
             const char* src = source.c_str();
 
             glShaderSource(shaderID, 1, &src, nullptr);
@@ -103,8 +99,7 @@ namespace visus
 
             int result;
             glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
-
-            if (result)
+            if (!result)
             {
                 int length;
                 glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
@@ -114,10 +109,10 @@ namespace visus
 
                 switch (type)
                 {
-                case static_cast<uint32_t>(GL_VERTEX_SHADER):
+                case ShaderType::VERTEX:
                     std::cout << "Failed to compile VERTEX shader\n";
                     break;
-                case static_cast<uint32_t>(GL_FRAGMENT_SHADER):
+                case ShaderType::FRAGMENT:
                     std::cout << "Failed to compile FRAGMENT shader\n";
                     break;
                 }
@@ -127,15 +122,15 @@ namespace visus
                 return 0;
             }
 
-            return static_cast<uint32_t>(shaderID);
+            return shaderID;
         }
 
-        uint32_t Shader::getUniformLocation(const std::string& name)
+        unsigned int Shader::getUniformLocation(const std::string& name)
         {
             // Uniform is already cached
             if (_uniformsCache.find(name) != _uniformsCache.end())
             {
-                return static_cast<uint32_t>(_uniformsCache[name]);
+                return _uniformsCache[name];
             }
 
             int location = glGetUniformLocation(_program, name.c_str());
@@ -147,7 +142,7 @@ namespace visus
             return location;
         }
 
-        void Shader::setUniform1i(const std::string& name, int32_t value)
+        void Shader::setUniform1i(const std::string& name, int value)
 
         {
             glUniform1i(getUniformLocation(name), value);
@@ -158,14 +153,9 @@ namespace visus
             glUniform1f(getUniformLocation(name), value);
         }
 
-        void Shader::setUniform3i(const std::string& name, int32_t v1, int32_t v2, int32_t v3)
+        void Shader::setUniform3i(const std::string& name, int v1, int v2, int v3)
         {
             glUniform3i(getUniformLocation(name), v1, v2, v3);
-        }
-
-        void Shader::setUniform3i(const std::string& name, glm::ivec3 v)
-        {
-            glUniform3iv(getUniformLocation(name), 1, &v[0]);
         }
 
         void Shader::setUniform3f(const std::string& name, float v1, float v2, float v3)
@@ -173,20 +163,9 @@ namespace visus
             glUniform3f(getUniformLocation(name), v1, v2, v3);
         }
 
-        void Shader::setUniform3f(const std::string& name, glm::vec3 v)
-        {
-            glUniform3fv(getUniformLocation(name), 1, &v[0]);
-        }
-
-        void Shader::setUniformMat3f(const std::string& name, glm::mat3 matrix)
-        {
-            glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
-        }
-
         void Shader::setUniformMat4f(const std::string& name, glm::mat4 matrix)
         {
             glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
         }
-
     } // namespace graphics
 } // namespace visus
