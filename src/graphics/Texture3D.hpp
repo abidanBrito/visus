@@ -26,7 +26,8 @@ namespace visus
 
         public:
             Texture3D(GLsizei width, GLsizei height, GLsizei depth, GLint internalFormat,
-                      GLenum pixelFormat, GLenum type, const void* data);
+                      GLenum pixelFormat, GLenum type, const void* data,
+                      const bool useNearest = false);
         };
     } // namespace graphics
 } // namespace visus
