@@ -40,40 +40,28 @@ namespace visus
 
             input.onCursorMoved = [hwnd](MCursorMoveEvent e)
             {
-                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd)); app)
+                // NOTE(abi): we don't want to modify the 3D view while using the GUI (bad UX!).
+                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd));
+                    app && !ImGui::GetIO().WantCaptureMouse)
                 {
-                    // NOTE(abi): we don't want to modify the 3D view while using the GUI (bad UX!).
-                    if (!ImGui::GetIO().WantCaptureMouse)
-                    {
-                        return;
-                    }
-
                     app->getScene()->getCamera()->onCursorMove(e.xPos, e.yPos);
                 }
             };
 
             input.onScrolled = [hwnd](MScrollEvent e)
             {
-                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd)); app)
+                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd));
+                    app && !ImGui::GetIO().WantCaptureMouse)
                 {
-                    if (!ImGui::GetIO().WantCaptureMouse)
-                    {
-                        return;
-                    }
-
                     app->getScene()->getCamera()->onScroll(e.xOffset, e.yOffset);
                 }
             };
 
             input.onMButtonPressed = [hwnd](MButtonPressEvent e)
             {
-                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd)); app)
+                if (App* app = static_cast<App*>(glfwGetWindowUserPointer(hwnd));
+                    app && !ImGui::GetIO().WantCaptureMouse)
                 {
-                    if (!ImGui::GetIO().WantCaptureMouse)
-                    {
-                        return;
-                    }
-
                     app->getScene()->getCamera()->onMButtonPress(e.button, e.action);
                 }
             };
