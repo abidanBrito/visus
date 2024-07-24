@@ -4,9 +4,8 @@ namespace visus
 {
     namespace graphics
     {
-        Texture3D::Texture3D(GLsizei width, GLsizei height, GLsizei depth, GLint internalFormat,
-                             GLenum pixelFormat, GLenum type, const void* data,
-                             const bool useNearest)
+        Texture3D::Texture3D(GLushort width, GLushort height, GLushort depth, GLenum internalFormat,
+                             GLenum pixelFormat, GLenum type, const void* data, bool useNearest)
         {
             // Texture ID
             glGenTextures(1, &_id);

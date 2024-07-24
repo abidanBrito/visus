@@ -4,7 +4,7 @@
 #include "VBO.hpp"
 #include "IBO.hpp"
 #include "Shader.hpp"
-// #include "Texture3D.hpp"
+#include "Texture3D.hpp"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -24,30 +24,30 @@ namespace visus
             std::unique_ptr<VBO> _screenQuadVertices{nullptr};
             std::unique_ptr<IBO> _screenQuadIndices{nullptr};
             std::unique_ptr<VAO> _screenQuad{nullptr};
-            unsigned int _screenQuadIndicesSize;
+            int _screenQuadIndicesSize;
 
             // DVR
             std::unique_ptr<Shader> _dvrShader{nullptr};
-            // std::shared_ptr<Texture3D> _volumeTexture;
-
-            // TODO(abi): gradient compute shader for normal estimation
+            std::shared_ptr<Texture3D> _volumeTexture{nullptr};
 
             void setupScreenQuad();
             void setupShaders();
-            void setupVolumeTexture();
-            void setupGradientTexture();
+            void setupDataTexture();
+
+            // TODO(abi): gradient compute shader for normal estimation
+            // void setupGradientTexture();
+
             void updateUniforms();
 
         public:
             VolumeRenderer(App* app);
             void render();
 
-            // TODO(abi): interactive variables
             // glm::vec4 bgColor{0.f};
-            // float marchDistance{0.01f};
-            // float densityFactor{1.f};
-            // float tfMid;
-            // float tdRange{1000.f};
+            float tfMid{500.f};
+            float tfRange{1000.f};
+            float densityFactor{1.f};
+            float marchDistance{0.01f};
         };
     } // namespace graphics
 } // namespace visus

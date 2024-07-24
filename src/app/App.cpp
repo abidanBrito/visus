@@ -44,12 +44,17 @@ namespace visus
 
     void App::render()
     {
-        // Clear the back buffer
-        clearWindowBuffers(true, false, false);
+        // Depth testing
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);
+
+        // Clear the back buffers
         glDisable(GL_CULL_FACE);
+        clearWindowBuffers(true, true, false);
+
         ui::startFrame();
 
-        // TODO(abi): render scene here...
         _renderer->render();
 
         ui::endFrame();
@@ -62,7 +67,8 @@ namespace visus
             | (depth ? ClearBufferMask::GL_DEPTH_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT)
             | (stencil ? ClearBufferMask::GL_STENCIL_BUFFER_BIT : ClearBufferMask::GL_NONE_BIT);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.f);
+        glClearColor(0.f, 0.f, 0.f, 1.f);
+        glClearDepth(1.0f);
         glClear(bufferMask);
     }
 } // namespace visus

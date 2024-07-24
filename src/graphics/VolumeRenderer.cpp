@@ -1,9 +1,10 @@
 #include "VolumeRenderer.hpp"
 #include "../app/App.hpp"
+#include "Shader.hpp"
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "IBO.hpp"
-#include "Shader.hpp"
+#include <iostream>
 
 namespace visus
 {
@@ -14,6 +15,9 @@ namespace visus
         {
             setupScreenQuad();
             setupShaders();
+            setupDataTexture();
+
+            tfMid = _app->getScene()->getVolume()->getMaximumIntensityValue() / 2.f;
         }
 
         void VolumeRenderer::setupScreenQuad()
@@ -27,7 +31,7 @@ namespace visus
             };
 
             // Indices (per triangle)
-            std::vector<uint32_t> indices{
+            std::vector<unsigned short> indices{
                 0, 1, 2, // Triangle #1
                 2, 3, 0  // Triangle #2
             };
@@ -62,7 +66,7 @@ namespace visus
             _screenQuad->unbind();
 
             // IMPORTANT(abi): required by the draw call
-            _screenQuadIndicesSize = static_cast<unsigned int>(indices.size());
+            _screenQuadIndicesSize = static_cast<int>(indices.size());
 
             vertices.clear();
             indices.clear();
@@ -77,6 +81,47 @@ namespace visus
                 std::make_unique<Shader>("res/shaders/volume.vert", "res/shaders/volume.frag");
         }
 
+        // Create a 3D texture and load volume data into it
+        void VolumeRenderer::setupDataTexture()
+        {
+            // Texture dimensions must match with those of the volume
+            GLushort width, height, depth;
+            width = _app->getScene()->getVolume()->getDimensions().at(0);
+            height = _app->getScene()->getVolume()->getDimensions().at(1);
+            depth = _app->getScene()->getVolume()->getDimensions().at(2);
+
+            _volumeTexture = std::make_unique<Texture3D>(width, height, depth, GL_R16F, GL_RED,
+                                                         GL_UNSIGNED_SHORT,
+                                                         _app->getScene()->getVolume()->getData());
+        }
+
+        // Set flat uniforms
+        void VolumeRenderer::updateUniforms()
+        {
+            // Model-Scene-View-Projection matrices
+            glm::mat4 modelMat = _app->getScene()->getVolume()->getModelMatrix();
+            glm::mat4 sceneMat = _app->getScene()->getSceneMatrix();
+            glm::mat4 viewMat = _app->getScene()->getCamera()->getViewMatrix();
+            glm::mat4 projectionMat = _app->getScene()->getCamera()->getProjectionMatrix();
+
+            glm::mat4 MSVP = projectionMat * viewMat * sceneMat * modelMat;
+            _dvrShader->setUniformMat4f("MSVP", MSVP);
+            _dvrShader->setUniformMat4f("inverseMSVP", inverse(MSVP));
+
+            // Ray marching params
+            _dvrShader->setUniform1f("tfMid", tfMid);
+            _dvrShader->setUniform1f(
+                "tfRange", glm::clamp(tfRange, 0.f,
+                                      _app->getScene()->getVolume()->getMaximumIntensityValue()));
+            _dvrShader->setUniform1f("densityFactor", densityFactor);
+            _dvrShader->setUniform1f("marchDistance", marchDistance);
+
+            glActiveTexture(GL_TEXTURE0);
+            _volumeTexture->bind();
+            _dvrShader->setUniform1i("volumeTexture", 0);
+            // _volumeTexture->unbind();
+        }
+
         void VolumeRenderer::render()
         {
             // Enable shader program
@@ -84,28 +129,14 @@ namespace visus
             _screenQuad->bind();
 
             // Pass in data to the shader
-            // updateUniforms();
+            updateUniforms();
 
             // Render volume
-            glDrawElements(GL_TRIANGLES, _screenQuadIndicesSize, GL_UNSIGNED_INT, nullptr);
+            glDrawElements(GL_TRIANGLES, _screenQuadIndicesSize, GL_UNSIGNED_SHORT, nullptr);
 
             // Release VAO and shader program
             _screenQuad->unbind();
             _dvrShader->unbind();
-        }
-
-        void VolumeRenderer::updateUniforms()
-        {
-            // TODO(abi): add model matrix
-            glm::mat4 sceneMatrix = _app->getScene()->getSceneMatrix();
-            // glm::mat4 modelMatrix = _app->getScene()->getVolume()->getModelMatrix();
-            glm::mat4 viewMatrix = _app->getScene()->getCamera()->getViewMatrix();
-            glm::mat4 projectionMatrix = _app->getScene()->getCamera()->getProjectionMatrix();
-
-            // P * V * S * M
-            glm::mat4 modelViewProjectionMat = projectionMatrix * viewMatrix * sceneMatrix;
-
-            _dvrShader->setUniformMat4f("MVP", modelViewProjectionMat);
         }
     } // namespace graphics
 } // namespace visus

@@ -14,6 +14,10 @@ namespace visus
         private:
             unsigned int _id;
 
+        public:
+            Texture3D(GLushort width, GLushort height, GLushort depth, GLenum internalFormat,
+                      GLenum pixelFormat, GLenum type, const void* data, bool useNearest = false);
+
             inline void bind() const
             {
                 glBindTexture(GL_TEXTURE_3D, _id);
@@ -23,11 +27,6 @@ namespace visus
             {
                 glBindTexture(GL_TEXTURE_3D, 0);
             }
-
-        public:
-            Texture3D(GLsizei width, GLsizei height, GLsizei depth, GLint internalFormat,
-                      GLenum pixelFormat, GLenum type, const void* data,
-                      const bool useNearest = false);
         };
     } // namespace graphics
 } // namespace visus
