@@ -24,7 +24,7 @@ namespace visus
             std::unique_ptr<VBO> _screenQuadVertices{nullptr};
             std::unique_ptr<IBO> _screenQuadIndices{nullptr};
             std::unique_ptr<VAO> _screenQuad{nullptr};
-            int _screenQuadIndicesSize;
+            unsigned int _screenQuadIndicesSize;
 
             // DVR
             std::unique_ptr<Shader> _dvrShader{nullptr};
@@ -32,7 +32,7 @@ namespace visus
 
             void setupScreenQuad();
             void setupShaders();
-            void setupDataTexture();
+            void setupVolumeTexture();
 
             // TODO(abi): gradient compute shader for normal estimation
             // void setupGradientTexture();
@@ -43,11 +43,12 @@ namespace visus
             VolumeRenderer(App* app);
             void render();
 
+            // TODO(abi): interactive variables
             // glm::vec4 bgColor{0.f};
-            float tfMid{500.f};
-            float tfRange{1000.f};
-            float densityFactor{1.f};
-            float marchDistance{0.01f};
+            // float densityFactor{1.f};
+            // float marchStep{0.01f};
+            // float tfMid{500.f};
+            // float tfRange{1000.f};
         };
     } // namespace graphics
 } // namespace visus

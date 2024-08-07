@@ -4,7 +4,6 @@
 #include "VAO.hpp"
 #include "VBO.hpp"
 #include "IBO.hpp"
-#include <iostream>
 
 namespace visus
 {
@@ -15,9 +14,10 @@ namespace visus
         {
             setupScreenQuad();
             setupShaders();
-            setupDataTexture();
+            setupVolumeTexture();
 
-            tfMid = _app->getScene()->getVolume()->getMaximumIntensityValue() / 2.f;
+            // TODO(abi): get mid value from the volume
+            // tfMid = _app->getScene()->getVolume()->getMaximumIntensityValue() / 2.f;
         }
 
         void VolumeRenderer::setupScreenQuad()
@@ -31,7 +31,7 @@ namespace visus
             };
 
             // Indices (per triangle)
-            std::vector<unsigned short> indices{
+            std::vector<unsigned char> indices{
                 0, 1, 2, // Triangle #1
                 2, 3, 0  // Triangle #2
             };
@@ -57,6 +57,9 @@ namespace visus
 
             // HACK(abi): for now, let's make the OpenGL calls ourselves.
             glEnableVertexAttribArray(0);
+
+            // Generic vertex attribute data definition
+            // Params: (index, size, type, normalized, stride, pointer)
             glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
             // Bind IBO
@@ -66,7 +69,7 @@ namespace visus
             _screenQuad->unbind();
 
             // IMPORTANT(abi): required by the draw call
-            _screenQuadIndicesSize = static_cast<int>(indices.size());
+            _screenQuadIndicesSize = static_cast<unsigned int>(indices.size());
 
             vertices.clear();
             indices.clear();
@@ -74,65 +77,79 @@ namespace visus
 
         void VolumeRenderer::setupShaders()
         {
-            // TODO(abi): set up gradient shader and texture
-
             // Volume Rendering
             _dvrShader =
                 std::make_unique<Shader>("res/shaders/volume.vert", "res/shaders/volume.frag");
+
+            // TODO(abi): set up gradient shader and texture
         }
 
-        // Create a 3D texture and load volume data into it
-        void VolumeRenderer::setupDataTexture()
+        void VolumeRenderer::setupVolumeTexture()
         {
-            // Texture dimensions must match with those of the volume
-            GLushort width, height, depth;
+            // NOTE(abi): texture dimensions must match those of the volume
+            unsigned short width, height, depth;
             width = _app->getScene()->getVolume()->getDimensions().at(0);
             height = _app->getScene()->getVolume()->getDimensions().at(1);
             depth = _app->getScene()->getVolume()->getDimensions().at(2);
 
+            // Create / set up the 3D texture and load the volume data into it
             _volumeTexture = std::make_unique<Texture3D>(width, height, depth, GL_R16F, GL_RED,
                                                          GL_UNSIGNED_SHORT,
                                                          _app->getScene()->getVolume()->getData());
+
+            // Bind it to texture unit 0
+            glActiveTexture(GL_TEXTURE0);
+            _volumeTexture->bind();
         }
 
         // Set flat uniforms
         void VolumeRenderer::updateUniforms()
         {
-            // Model-Scene-View-Projection matrices
-            glm::mat4 modelMat = _app->getScene()->getVolume()->getModelMatrix();
+            // NOTE(abi): we could transform the scene as a whole via. By default though,
+            // `sceneMat` is an identity matrix.
             glm::mat4 sceneMat = _app->getScene()->getSceneMatrix();
+
+            // MVP
+            glm::mat4 modelMat = _app->getScene()->getVolume()->getModelMatrix();
             glm::mat4 viewMat = _app->getScene()->getCamera()->getViewMatrix();
             glm::mat4 projectionMat = _app->getScene()->getCamera()->getProjectionMatrix();
 
-            glm::mat4 MSVP = projectionMat * viewMat * sceneMat * modelMat;
-            _dvrShader->setUniformMat4f("MSVP", MSVP);
-            _dvrShader->setUniformMat4f("inverseMSVP", inverse(MSVP));
+            glm::mat4 msvpMat = projectionMat * viewMat * sceneMat * modelMat;
 
-            // Ray marching params
-            _dvrShader->setUniform1f("tfMid", tfMid);
-            _dvrShader->setUniform1f(
-                "tfRange", glm::clamp(tfRange, 0.f,
-                                      _app->getScene()->getVolume()->getMaximumIntensityValue()));
-            _dvrShader->setUniform1f("densityFactor", densityFactor);
-            _dvrShader->setUniform1f("marchDistance", marchDistance);
+            // _dvrShader->setUniformMat4f("MVP", msvpMat);
+            _dvrShader->setUniformMat4f("invMVP", glm::inverse(msvpMat));
 
-            glActiveTexture(GL_TEXTURE0);
-            _volumeTexture->bind();
+            // TODO(abi): don't hardcode these...
+            // DVR params
+            _dvrShader->setUniform1f("tfMid", 1482.f);
+            _dvrShader->setUniform1f("tfRange", 1000.f);
+            _dvrShader->setUniform1f("marchStep", 0.01f);
+            _dvrShader->setUniform1f("densityFactor", 1.f);
+
+            // _dvrShader->setUniform1f(
+            // "tfRange", glm::clamp(tfRange, 0.f,
+            // _app->getScene()->getVolume()->getMaximumIntensityValue()));
+
+            // Volume texture
             _dvrShader->setUniform1i("volumeTexture", 0);
             // _volumeTexture->unbind();
+
+            // TODO(abi): add gradient texture
         }
 
         void VolumeRenderer::render()
         {
             // Enable shader program
             _dvrShader->bind();
-            _screenQuad->bind();
 
             // Pass in data to the shader
             updateUniforms();
 
+            // Enable VAO
+            _screenQuad->bind();
+
             // Render volume
-            glDrawElements(GL_TRIANGLES, _screenQuadIndicesSize, GL_UNSIGNED_SHORT, nullptr);
+            glDrawElements(GL_TRIANGLES, _screenQuadIndicesSize, GL_UNSIGNED_BYTE, nullptr);
 
             // Release VAO and shader program
             _screenQuad->unbind();
