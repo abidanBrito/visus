@@ -18,10 +18,17 @@ namespace visus
             VAO();
             ~VAO();
 
-            void bind() const;
-            void unbind() const;
-
             void addVertexBuffer(const VBO& vb, const VBLayout& layout);
+
+            inline void bind() const
+            {
+                glBindVertexArray(_vertexArray);
+            }
+
+            inline void unbind() const
+            {
+                glBindVertexArray(0);
+            }
         };
     } // namespace graphics
 } // namespace visus

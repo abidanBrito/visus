@@ -1,10 +1,5 @@
 #include "VAO.hpp"
 
-#include <glbinding/gl/gl.h>
-#include <glbinding/glbinding.h>
-
-using namespace gl;
-
 namespace visus
 {
     namespace graphics
@@ -17,16 +12,6 @@ namespace visus
         VAO::~VAO()
         {
             glDeleteVertexArrays(1, &_vertexArray);
-        }
-
-        void VAO::bind() const
-        {
-            glBindVertexArray(_vertexArray);
-        }
-
-        void VAO::unbind() const
-        {
-            glBindVertexArray(0);
         }
 
         void VAO::addVertexBuffer(const VBO& vbo, const VBLayout& layout)
