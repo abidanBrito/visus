@@ -1,13 +1,8 @@
 #include "Shader.hpp"
 
-#include <glbinding/gl/gl.h>
-#include <glbinding/glbinding.h>
-
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
-using namespace gl;
 
 namespace visus
 {
@@ -18,6 +13,7 @@ namespace visus
         {
             std::string vs = parseShader(vsPath);
             std::string fs = parseShader(fsPath);
+
             _program = createShaderProgram(vs, fs);
         }
 
@@ -26,22 +22,12 @@ namespace visus
             glDeleteShader(_program);
         }
 
-        void Shader::bind() const
-        {
-            glUseProgram(_program);
-        }
-
-        void Shader::unbind() const
-        {
-            glUseProgram(0);
-        }
-
         std::string Shader::parseShader(const std::string& shaderPath)
         {
             std::ifstream file(shaderPath);
             if (!file.is_open())
             {
-                std::cout << "Unable to open shader file at the specific path:" << '\n';
+                std::cout << "Unable to open shader file at: " << shaderPath << '\n';
             }
 
             std::stringstream sourceBuffer;
@@ -104,7 +90,7 @@ namespace visus
                 int length;
                 glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &length);
 
-                char* msg = (char*)alloca(sizeof(char) * length);
+                char* msg = static_cast<char*>(alloca(sizeof(char) * length));
                 glGetShaderInfoLog(shaderID, length, &length, msg);
 
                 switch (type)
@@ -134,11 +120,12 @@ namespace visus
             }
 
             int location = glGetUniformLocation(_program, name.c_str());
-            if (location != -1)
+            if (location == -1)
             {
-                _uniformsCache[name] = location;
+                std::cout << "[WARN]: uniform " << name << " doesn't exist!" << '\n';
             }
 
+            _uniformsCache[name] = location;
             return location;
         }
 
