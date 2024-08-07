@@ -4,7 +4,7 @@ namespace visus
 {
     namespace graphics
     {
-        IBO::IBO(std::vector<unsigned short>& indices)
+        IBO::IBO(std::vector<unsigned char>& indices)
             : _count(static_cast<unsigned int>(indices.size()))
         {
             glGenBuffers(1, &_indexBuffer);

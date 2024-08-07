@@ -19,15 +19,15 @@ namespace visus
             unsigned int _count;
 
         public:
-            IBO(std::vector<unsigned short>& indices);
+            IBO(std::vector<unsigned char>& indices);
             ~IBO();
 
-            void bind() const
+            inline void bind() const
             {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
             }
 
-            void unbind() const
+            inline void unbind() const
             {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
             }
