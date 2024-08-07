@@ -5,7 +5,7 @@ namespace visus
     namespace graphics
     {
         Texture3D::Texture3D(GLushort width, GLushort height, GLushort depth, GLenum internalFormat,
-                             GLenum pixelFormat, GLenum type, const void* data, bool useNearest)
+                             GLenum pixelFormat, GLenum type, const void* data)
         {
             // Texture ID
             glGenTextures(1, &_id);
@@ -14,12 +14,13 @@ namespace visus
             bind();
 
             // Linear interpolation for sampling
-            GLenum filterParam = useNearest ? GL_NEAREST : GL_LINEAR;
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, filterParam);
-            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, filterParam);
+            // TODO(abi): add switch for nearest neighbour
+            // GLenum filterParam = useNearest ? GL_NEAREST : GL_LINEAR;
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             // Border handling
-            // NOTE(abi): maybe try out `GL_CLAMP_TO_EDGE` instead.
+            // IMPORTANT(abi): extend borders outside [0, 1], no tiling
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);

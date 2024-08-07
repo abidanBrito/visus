@@ -16,7 +16,7 @@ namespace visus
 
         public:
             Texture3D(GLushort width, GLushort height, GLushort depth, GLenum internalFormat,
-                      GLenum pixelFormat, GLenum type, const void* data, bool useNearest = false);
+                      GLenum pixelFormat, GLenum type, const void* data);
 
             inline void bind() const
             {
