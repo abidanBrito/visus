@@ -39,7 +39,7 @@ namespace visus
         void destroy();
 
         void setTitle(const std::string& name);
-        void setIcon(const std::string& path);
+        bool setIcon(const std::string& path);
         void setCursorMode(int32_t mode);
         void setVSync(bool state);
 

@@ -1,16 +1,20 @@
 #include "App.hpp"
 #include "../ui/UI.hpp"
 
+#include <iostream>
+
 using namespace gl;
 
 namespace visus
 {
     App::App()
-        : _window{Window()},
+        : _window{Window(1920, 1080, "Visus3D", true)},
           _input{input::InputManager(_window.getHandle())}
     {
-        _window.setIcon("res/img/logo.png");
-        _window.setVSync(true);
+        if (!_window.setIcon("res/img/logo.png"))
+        {
+            std::cout << "[WARN]: failed to read in icon pixel data.\n";
+        }
 
         auto hwnd = _window.getHandle();
         glfwSetWindowUserPointer(hwnd, &_window);
@@ -50,7 +54,6 @@ namespace visus
         glDepthFunc(GL_LESS);
 
         // Clear the back buffers
-        glDisable(GL_CULL_FACE);
         clearWindowBuffers(true, true, false);
 
         ui::startFrame();

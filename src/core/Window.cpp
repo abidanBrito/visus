@@ -61,7 +61,7 @@ namespace visus
 
         // Create window
         _handle = glfwCreateWindow(_properties.width, _properties.height, _properties.title.c_str(),
-                                   NULL, NULL);
+                                   nullptr, nullptr);
         if (_handle == nullptr)
         {
             std::cout << "[ERROR] - Failed to create the window!\n";
@@ -91,14 +91,25 @@ namespace visus
         glfwSetWindowTitle(_handle, name.c_str());
     }
 
-    void Window::setIcon(const std::string& path)
+    bool Window::setIcon(const std::string& path)
     {
         // Load window icon
-        GLFWimage windowIcons[1];
-        windowIcons[0].pixels =
-            stbi_load(path.c_str(), &windowIcons[0].width, &windowIcons[0].height, 0, 4);
-        glfwSetWindowIcon(_handle, 1, windowIcons);
-        stbi_image_free(windowIcons[0].pixels);
+        int width, height, channels;
+        unsigned char* pixels = stbi_load(path.c_str(), &width, &height, &channels, 4);
+        if (!pixels)
+        {
+            return false;
+        }
+
+        GLFWimage image;
+        image.width = width;
+        image.height = height;
+        image.pixels = pixels;
+
+        glfwSetWindowIcon(_handle, 1, &image);
+        stbi_image_free(pixels);
+
+        return true;
     }
 
     void Window::setCursorMode(int32_t mode)
