@@ -9,42 +9,41 @@ namespace visus
     {
         VolumeData::VolumeData()
         {
-            loadDataset();
-            findValuesOfInterest();
+            parseNifti();
+            // findValuesOfInterest();
 
-            // IMPORTANT(abi): it's essential to transform the volume in the fragment. We need to
-            // define the volume's origin point. I'm not too sure how to determine this per-volume,
-            // maybe take a look at the header.
+            // Center at the origin
             _modelMat = glm::translate(_modelMat, glm::vec3(-0.5f));
 
             // Volume scale (defined in header metadata)
-            _modelMat = glm::scale(_modelMat, glm::vec3(_scale.x, _scale.y, _scale.z));
+            _modelMat = glm::scale(_modelMat, _scaleVec);
 
             // After scaling we obviously need to shift the volume to recenter it
-            _modelMat = glm::translate(
-                _modelMat, glm::vec3((1.f - _scale.x), (1.f - _scale.y), (1.f - _scale.z)));
+            _modelMat =
+                glm::translate(_modelMat, glm::vec3((1.f - _scaleVec.x), (1.f - _scaleVec.y),
+                                                    (1.f - _scaleVec.z)));
         }
 
         // NOTE(abi): NIfTI and many other formats encode the volume as a single "image data",
         // rather than a series of individual axial images.
-        void VolumeData::loadDataset()
+        void VolumeData::parseNifti()
         {
-            // Free memory, if some is allocated
-            if (_images)
+            // Release previous image, is one is allocated
+            if (_image)
             {
-                nifti_image_free(_images);
+                nifti_image_free(_image);
             }
 
-            // Data
-            _images = nifti_image_read(_datasetPath.c_str(), 1);
-            if (!_images)
+            // Parse image (data)
+            _image = nifti_image_read(_datasetPath.c_str(), 1);
+            if (!_image)
             {
-                std::cout << "Failed parsing NIfTI image data." << '\n';
+                std::cout << "Failed parsing NIfTI image: " << _datasetPath << '\n';
                 return;
             }
 
-            // Metadata
-            _header = nifti_read_header(_datasetPath.c_str(), NULL, 0);
+            // Parse header (metadata)
+            _header = nifti_read_header(_datasetPath.c_str(), nullptr, 0);
             if (_printHeader)
             {
                 disp_nifti_1_header(nullptr, _header);
@@ -54,34 +53,35 @@ namespace visus
                            static_cast<unsigned short>(_header->dim[2]),
                            static_cast<unsigned short>(_header->dim[3])};
 
-            // Scale vector
-            float largestDim = std::max(_dimensions[0], std::max(_dimensions[1], _dimensions[2]));
-            _scale = glm::vec3(static_cast<float>(_dimensions[0] / largestDim),
-                               static_cast<float>(_dimensions[1] / largestDim),
-                               static_cast<float>(_dimensions[2] / largestDim));
+            // NOTE(abi): we need to scale the model matrix by the volume dimensions.
+            float largestDimension =
+                std::max(_dimensions[0], std::max(_dimensions[1], _dimensions[2]));
+            _scaleVec = glm::vec3(static_cast<float>(_dimensions[0]) / largestDimension,
+                                  static_cast<float>(_dimensions[1]) / largestDimension,
+                                  static_cast<float>(_dimensions[2]) / largestDimension);
         }
 
-        // We are interested in certain statistical values to perform different types or
-        // projections:
-        //	- MIP (Maximum Intensity Projection).
-        //	- AIP (Average Intensity Projection).
-        void VolumeData::findValuesOfInterest()
-        {
-            float numSamples{static_cast<float>(_dimensions[0] * _dimensions[1] * _dimensions[2])};
-            for (unsigned int i = 0; i < numSamples; ++i)
-            {
-                // Current voxel value
-                float sample = static_cast<float>(getData()[i]);
-                if (sample > _maxIntensity)
-                {
-                    _maxIntensity = sample;
-                }
-                _averageIntensity += sample;
-            }
-            _averageIntensity = _averageIntensity / numSamples;
+        // // We are interested in certain statistical values to perform different types or
+        // // projections:
+        // //	- MIP (Maximum Intensity Projection).
+        // //	- AIP (Average Intensity Projection).
+        // void VolumeData::findValuesOfInterest()
+        // {
+        //     float numSamples{static_cast<float>(_dimensions[0] * _dimensions[1] *
+        //     _dimensions[2])}; for (unsigned int i = 0; i < numSamples; ++i)
+        //     {
+        //         // Current voxel value
+        //         float sample = static_cast<float>(getData()[i]);
+        //         if (sample > _maxIntensity)
+        //         {
+        //             _maxIntensity = sample;
+        //         }
+        //         _averageIntensity += sample;
+        //     }
+        //     _averageIntensity = _averageIntensity / numSamples;
 
-            std::cout << "Maximum: " << _maxIntensity << '\n';
-            std::cout << "Average: " << _averageIntensity << '\n';
-        }
+        //     std::cout << "Maximum: " << _maxIntensity << '\n';
+        //     std::cout << "Average: " << _averageIntensity << '\n';
+        // }
     } // namespace graphics
 } // namespace visus
